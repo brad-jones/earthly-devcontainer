@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+git config --get-regexp ^user.*$ > .git/user.conf
+earthly ./.devcontainer+base

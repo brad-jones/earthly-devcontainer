@@ -1,0 +1,26 @@
+{
+  "incremental": true,
+  "typescript": {},
+  "json": {},
+  "markdown": {},
+  "dockerfile": {},
+  "prettier": {
+    "associations": [
+      "**/*.{yml,yaml}"
+    ]
+  },
+  "includes": [
+    "**/*.{ts,tsx,js,jsx,cjs,mjs,json,md,dockerfile,yml,yaml}"
+  ],
+  "excludes": [
+    "**/node_modules",
+    "**/*-lock.json"
+  ],
+  "plugins": [
+    "https://plugins.dprint.dev/typescript-0.67.0.wasm",
+    "https://plugins.dprint.dev/json-0.15.1.wasm",
+    "https://plugins.dprint.dev/markdown-0.13.1.wasm",
+    "https://plugins.dprint.dev/dockerfile-0.2.2.wasm",
+    "https://plugins.dprint.dev/prettier-0.6.1.exe-plugin@2d54d5f8dbdeb087762fadc4840c688327f5deab447c94b32ca3850106db9224"
+  ]
+}

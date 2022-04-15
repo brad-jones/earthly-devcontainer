@@ -1,0 +1,84 @@
+VERSION --use-cache-command 0.6
+
+# Load the scripts into a layer so our UDC(s) below have access to them.
+# I'd really love to be able to use "RUN --mount,type=bind" but Earthly
+# does not support that yet.
+#
+# see: https://github.com/earthly/earthly/issues/1139
+scripts:
+  FROM busybox:latest
+  COPY ./scripts/. /scripts/.
+  RUN for file in /scripts/*.bash; do mv "$file" "${file%%.bash}"; done
+  SAVE ARTIFACT /scripts/*
+
+# Simply touches a new marker file so we can refer
+# to it's timestamp in the "TO_NOW" script.
+FROM_NOW:
+  COMMAND
+  ARG NAME="default"
+  CACHE /FROM_NOW
+  COPY github.com/brad-jones/earthly-devcontainer/utils+scripts/from-now /FROM_NOW/script
+  RUN /FROM_NOW/script ${NAME}
+
+# Uses a "tar" pipe to gather up all the changed files between the "FROM_NOW"
+# marker and "NOW", excluding things like log files, package manager cache &
+# other temporary files.
+#
+# Usage might look like this:
+#
+#   foo-provider:
+#     FROM big-builder-image
+#     DO +FROM_NOW "foo-install"
+#     RUN install foo commands
+#     DO +TO_NOW "foo-install"
+#     SAVE ARTIFACT /tmp/changed-foo-install/*
+#
+#   foo-consumer:
+#     FROM small-runtime-image
+#     COPY +foo-provider/ /
+#
+# Of course if you know exactly what you built you don't need any of this
+# and can define an approriate "SAVE ARTIFACT" command instead. This is most
+# useful for collecting changes made by package managers where you do not have
+# direct control over what was installed & where it was installed.
+TO_NOW:
+  COMMAND
+  ARG NAME="default"
+  CACHE /TO_NOW
+  COPY github.com/brad-jones/earthly-devcontainer/utils+scripts/to-now /TO_NOW/script
+  RUN /TO_NOW/script ${NAME}
+
+# Install the ./hook scripts into the image. All lifecycle hooks
+# apart from "initializeCommand" run inside the container.
+#
+# see: https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_lifecycle-scripts
+INSTALL_HOOKS:
+  COMMAND
+  COPY ./hooks/. /usr/local/bin/.
+  RUN for file in /usr/local/bin/*.bash; do mv "$file" "${file%%.bash}"; done
+  RUN chmod +x /usr/local/bin/*
+
+# Create our entrypoint that will execute each time the devcontainer is started.
+#
+# This is designed to work with: "overrideCommand": false
+# If this property in the devcontainer.json config is set to true (the default)
+# then the entrypoint will not be executed.
+#
+# NOTE: The entrypoint will execute with root permissions so it can do things
+# like setup permissions to the mounted docker socket & then it will use gosu
+# to switch to the unprivilaged user.
+#
+# see: https://code.visualstudio.com/docs/remote/containers-advanced#_adding-startup-commands-to-the-docker-image-instead
+INSTALL_ENTRYPOINT:
+  COMMAND
+  ARG USERNAME="code"
+  ARG USER_UID="1000"
+  ARG USER_GID="${USER_UID}"
+  ARG DOCKER_SOURCE_SOCKET="/var/run/docker-host.sock"
+  ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
+  ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
+  CACHE /INSTALL_ENTRYPOINT
+  COPY github.com/brad-jones/earthly-devcontainer/utils+scripts/install-entrypoint /INSTALL_ENTRYPOINT/script
+  RUN /INSTALL_ENTRYPOINT/script
+  ENTRYPOINT [ "/entrypoint.bash" ]
+  CMD [ "sleep", "infinity" ]

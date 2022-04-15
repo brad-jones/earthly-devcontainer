@@ -1,0 +1,68 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+    "name": "EarthlyDevContainer",
+    "image": "ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest",
+    // This command is responsible for installing https://earthly.dev &
+    // then building the Earthfile instead of using a vanilla Dockerfile.
+    // 
+    // This form of initializeCommand will execute the bash script
+    // ".devcontainer/init" on Linux/Darwin systems & ".devcontainer/init.cmd"
+    // (which then calls ".devcontainer/init.ps1") on Windows systems.
+    // 
+    // see: https://github.com/microsoft/vscode-remote-release/issues/4568#issuecomment-799302469
+    "initializeCommand": [
+        ".devcontainer/init"
+    ],
+    "onCreateCommand": [
+        "onCreateCommand"
+    ],
+    "updateContentCommand": [
+        "updateContentCommand"
+    ],
+    "postCreateCommand": [
+        "postCreateCommand"
+    ],
+    "postStartCommand": [
+        "postStartCommand"
+    ],
+    "postAttachCommand": [
+        "postAttachCommand"
+    ],
+    "shutdownAction": "stopContainer",
+    "runArgs": [
+        "--init"
+    ],
+    "overrideCommand": false,
+    "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind",
+        "source=${localWorkspaceFolderBasename}-bashhistory,target=/bashhistory,type=volume",
+        "source=${localWorkspaceFolderBasename}-ghconfig,target=/home/code/.config/gh,type=volume",
+        "source=${localWorkspaceFolderBasename}-gopath,target=/home/code/go,type=volume"
+    ],
+    "remoteUser": "code",
+    "remoteEnv": {
+        "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+    },
+    "extensions": [
+        "dprint.dprint",
+        "eamodio.gitlens",
+        "editorconfig.editorconfig",
+        "foxundermoon.shell-format",
+        "golang.go",
+        "mechatroner.rainbow-csv",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "ryu1kn.partial-diff",
+        "streetsidesoftware.code-spell-checker",
+        "timonwong.shellcheck",
+        "tyriar.sort-lines",
+        "wmaurer.change-case"
+    ],
+    "settings": {
+        "dprint.path": "/usr/bin/dprint",
+        "shellformat.path": "/usr/bin/shfmt",
+        "shellcheck.executablePath": "/usr/bin/shellcheck",
+        "remote.containers.copyGitConfig": false
+    }
+}

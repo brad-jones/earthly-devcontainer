@@ -1,0 +1,47 @@
+{
+    "editor.codeLens": false,
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.renderWhitespace": "boundary",
+    "[go]": {
+        "editor.defaultFormatter": "golang.go"
+    },
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "[dockerfile]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "dprint.dprint"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "dprint.dprint"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "dprint.dprint"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "dprint.dprint"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "dprint.dprint"
+    },
+    "files.associations": {
+        "*.gitmessagetpl": "git-commit"
+    },
+    "go.useLanguageServer": true,
+    "gopls": {
+        "build.experimentalWorkspaceModule": true,
+        "formatting.gofumpt": true
+    },
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [
+        "--fast"
+    ],
+    "shellformat.useEditorConfig": true,
+}

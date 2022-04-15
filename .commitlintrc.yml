@@ -1,0 +1,4 @@
+# spec: https://commitlint.js.org/#/reference-configuration?id=configuration-object-example
+
+extends:
+  - "@commitlint/config-conventional"

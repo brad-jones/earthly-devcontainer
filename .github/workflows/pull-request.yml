@@ -1,0 +1,17 @@
+on: pull_request
+
+jobs:
+  test:
+    uses: brad-jones/hashdir/.github/workflows/test.yml@master
+
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:latest
+      volumes:
+        - /var/run/docker.sock:/var/run/docker-host.sock
+    steps:
+      - uses: actions/checkout@v3
+      - run: task lint
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
