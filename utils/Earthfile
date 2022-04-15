@@ -17,7 +17,7 @@ scripts:
 FROM_NOW:
   COMMAND
   ARG NAME="default"
-  CACHE /FROM_NOW
+  #CACHE /FROM_NOW
   COPY github.com/brad-jones/earthly-devcontainer/utils+scripts/from-now /FROM_NOW/script
   RUN ls -hal /FROM_NOW
   RUN /FROM_NOW/script ${NAME}
