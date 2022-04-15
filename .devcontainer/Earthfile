@@ -3,6 +3,6 @@ FROM github.com/brad-jones/earthly-devcontainer/base+debian
 DO github.com/brad-jones/earthly-devcontainer/packages/ca-certificates+INSTALL
 #DO ../utils+INSTALL_HOOKS
 #DO ../utils+INSTALL_ENTRYPOINT
-SAVE IMAGE ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest
+#SAVE IMAGE ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest
 
 # https://github.com/brad-jones/hashdir/blob/master/.devcontainer/Dockerfile

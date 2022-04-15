@@ -1,8 +1,7 @@
 VERSION --use-cache-command 0.6
 
 build:
-  ARG VERSION="11"
-  FROM github.com/brad-jones/earthly-devcontainer/builders+debian --VERSION=${VERSION}
+  FROM github.com/brad-jones/earthly-devcontainer/builders+debian
   SAVE ARTIFACT /tmp/changed-ca-certificates/*
 
 INSTALL:

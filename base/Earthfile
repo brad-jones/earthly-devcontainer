@@ -1,8 +1,7 @@
 VERSION --use-cache-command 0.6
 
 debian:
-  ARG VERSION="11"
-  FROM debian:${VERSION}-slim
+  FROM debian:11-slim
 
   # VsCode will respect the default shell as configured inside the container
   # see: https://github.com/microsoft/vscode-remote-release/issues/350

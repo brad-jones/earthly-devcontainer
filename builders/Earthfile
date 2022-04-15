@@ -1,8 +1,7 @@
 VERSION --use-cache-command 0.6
 
 debian:
-  ARG VERSION="11"
-  FROM github.com/brad-jones/earthly-devcontainer/base+debian --VERSION=${VERSION}
+  FROM github.com/brad-jones/earthly-devcontainer/base+debian
   ENV DEBIAN_FRONTEND="noninteractive"
   RUN apt-get -y update
   DO github.com/brad-jones/earthly-devcontainer/utils+FROM_NOW --NAME="ca-certificates"
