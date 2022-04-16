@@ -13,4 +13,6 @@ build:
 
 INSTALL:
   COMMAND
-  COPY envsubst+build/ /
+  IF [ ! -f "/usr/bin/envsubst" ]
+    COPY envsubst+build/ /
+  END
