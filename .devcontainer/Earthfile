@@ -1,5 +1,5 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian:master
 FROM debian+base
 DO debian/ca-certificates+INSTALL
 #DO ../utils+INSTALL_HOOKS
