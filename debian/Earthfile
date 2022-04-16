@@ -60,26 +60,3 @@ INSTALL_HOOKS:
   COPY ./hooks/. /usr/local/bin/.
   RUN for file in /usr/local/bin/*.bash; do mv "$file" "${file%%.bash}"; done
   RUN chmod +x /usr/local/bin/*
-
-# Create our entrypoint that will execute each time the devcontainer is started.
-#
-# This is designed to work with: "overrideCommand": false
-# If this property in the devcontainer.json config is set to true (the default)
-# then the entrypoint will not be executed.
-#
-# NOTE: The entrypoint will execute with root permissions so it can do things
-# like setup permissions to the mounted docker socket & then it will use gosu
-# to switch to the unprivilaged user.
-#
-# see: https://code.visualstudio.com/docs/remote/containers-advanced#_adding-startup-commands-to-the-docker-image-instead
-#INSTALL_ENTRYPOINT:
-#  COMMAND
-#  ARG USERNAME="code"
-#  ARG USER_UID="1000"
-#  ARG USER_GID="${USER_UID}"
-#  ARG DOCKER_SOURCE_SOCKET="/var/run/docker-host.sock"
-#  ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
-#  ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
-#  RUN install-entrypoint
-#  ENTRYPOINT [ "/entrypoint.bash" ]
-#  CMD [ "sleep", "infinity" ]
