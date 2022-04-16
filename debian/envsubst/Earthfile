@@ -1,0 +1,16 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/envsubst
+
+# see: https://linux.die.net/man/1/envsubst
+
+build:
+  FROM debian+builder
+  DO debian+FROM_NOW
+  RUN apt-get -y install --no-install-recommends gettext-base
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  COPY envsubst+build/ /
