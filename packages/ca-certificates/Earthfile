@@ -1,9 +1,0 @@
-VERSION --use-cache-command 0.6
-
-build:
-  FROM github.com/brad-jones/earthly-devcontainer/builders+debian
-  SAVE ARTIFACT /tmp/changed-ca-certificates/*
-
-INSTALL:
-  COMMAND
-  COPY github.com/brad-jones/earthly-devcontainer/packages/ca-certificates+build/ /

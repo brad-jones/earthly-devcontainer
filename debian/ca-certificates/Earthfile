@@ -1,0 +1,10 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+
+build:
+  FROM debian+builder
+  SAVE ARTIFACT /tmp/changed-ca-certificates/*
+
+INSTALL:
+  COMMAND
+  COPY debian/ca-certificates+build/ /

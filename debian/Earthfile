@@ -1,26 +1,29 @@
 VERSION --use-cache-command 0.6
 
-# Load the scripts into a layer so our UDC(s) below have access to them.
-# I'd really love to be able to use "RUN --mount,type=bind" but Earthly
-# does not support that yet.
-#
-# see: https://github.com/earthly/earthly/issues/1139
-scripts:
-  FROM busybox:latest
-  COPY ./scripts/. /scripts/.
-  RUN for file in /scripts/*.bash; do mv "$file" "${file%%.bash}"; done
-  RUN chmod +x /scripts/*
-  SAVE ARTIFACT /scripts/*
+ARG OS_VERSION="11"
+FROM debian:${OS_VERSION}-slim
+
+# VsCode will respect the default shell as configured inside the container
+# see: https://github.com/microsoft/vscode-remote-release/issues/350
+ENV SHELL="/bin/bash"
+
+builder:
+  COPY ./scripts/. /usr/local/bin/.
+  RUN for file in /usr/local/bin/*.bash; do mv "$file" "${file%%.bash}"; done
+  RUN chmod +x /usr/local/bin/*
+  ENV DEBIAN_FRONTEND="noninteractive"
+  RUN apt-get -y update
+  DO +FROM_NOW --NAME="ca-certificates"
+  RUN apt-get -y install --no-install-recommends ca-certificates
+  RUN sed -i 's/http:\/\//https:\/\//g' /etc/apt/sources.list
+  DO +TO_NOW --NAME="ca-certificates"
 
 # Simply touches a new marker file so we can refer
 # to it's timestamp in the "TO_NOW" script.
 FROM_NOW:
   COMMAND
   ARG NAME="default"
-  #CACHE /FROM_NOW
-  COPY github.com/brad-jones/earthly-devcontainer/utils+scripts/from-now /FROM_NOW/script
-  RUN ls -hal /FROM_NOW
-  RUN /FROM_NOW/script ${NAME}
+  RUN from-now ${NAME}
 
 # Uses a "tar" pipe to gather up all the changed files between the "FROM_NOW"
 # marker and "NOW", excluding things like log files, package manager cache &
@@ -46,9 +49,7 @@ FROM_NOW:
 TO_NOW:
   COMMAND
   ARG NAME="default"
-  CACHE /TO_NOW
-  COPY github.com/brad-jones/earthly-devcontainer/utils+scripts/to-now /TO_NOW/script
-  RUN /TO_NOW/script ${NAME}
+  RUN to-now ${NAME}
 
 # Install the ./hook scripts into the image. All lifecycle hooks
 # apart from "initializeCommand" run inside the container.
@@ -71,16 +72,14 @@ INSTALL_HOOKS:
 # to switch to the unprivilaged user.
 #
 # see: https://code.visualstudio.com/docs/remote/containers-advanced#_adding-startup-commands-to-the-docker-image-instead
-INSTALL_ENTRYPOINT:
-  COMMAND
-  ARG USERNAME="code"
-  ARG USER_UID="1000"
-  ARG USER_GID="${USER_UID}"
-  ARG DOCKER_SOURCE_SOCKET="/var/run/docker-host.sock"
-  ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
-  ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
-  CACHE /INSTALL_ENTRYPOINT
-  COPY github.com/brad-jones/earthly-devcontainer/utils+scripts/install-entrypoint /INSTALL_ENTRYPOINT/script
-  RUN /INSTALL_ENTRYPOINT/script
-  ENTRYPOINT [ "/entrypoint.bash" ]
-  CMD [ "sleep", "infinity" ]
+#INSTALL_ENTRYPOINT:
+#  COMMAND
+#  ARG USERNAME="code"
+#  ARG USER_UID="1000"
+#  ARG USER_GID="${USER_UID}"
+#  ARG DOCKER_SOURCE_SOCKET="/var/run/docker-host.sock"
+#  ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
+#  ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
+#  RUN install-entrypoint
+#  ENTRYPOINT [ "/entrypoint.bash" ]
+#  CMD [ "sleep", "infinity" ]

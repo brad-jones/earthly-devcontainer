@@ -1,6 +1,7 @@
 VERSION --use-cache-command 0.6
-FROM github.com/brad-jones/earthly-devcontainer/base+debian
-DO github.com/brad-jones/earthly-devcontainer/packages/ca-certificates+INSTALL
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+FROM debian+base
+DO debian/ca-certificates+INSTALL
 #DO ../utils+INSTALL_HOOKS
 #DO ../utils+INSTALL_ENTRYPOINT
 #SAVE IMAGE ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest
