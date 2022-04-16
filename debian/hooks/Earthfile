@@ -1,0 +1,12 @@
+VERSION --use-cache-command 0.6
+
+# Install the ./hook scripts into the image. All lifecycle hooks
+# apart from "initializeCommand" run inside the container.
+#
+# see: https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_lifecycle-scripts
+
+INSTALL:
+  COMMAND
+  COPY ./hooks/. /usr/local/bin/.
+  RUN for file in /usr/local/bin/*.bash; do mv "$file" "${file%%.bash}"; done
+  RUN chmod +x /usr/local/bin/*

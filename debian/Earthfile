@@ -8,9 +8,6 @@ FROM debian:${OS_VERSION}-slim
 ENV SHELL="/bin/bash"
 
 builder:
-  COPY ./scripts/. /usr/local/bin/.
-  RUN for file in /usr/local/bin/*.bash; do mv "$file" "${file%%.bash}"; done
-  RUN chmod +x /usr/local/bin/*
   ENV DEBIAN_FRONTEND="noninteractive"
   RUN apt-get -y update
   DO +FROM_NOW --NAME="ca-certificates"
@@ -23,7 +20,7 @@ builder:
 FROM_NOW:
   COMMAND
   ARG NAME="default"
-  RUN from-now ${NAME}
+  RUN touch "/tmp/mark-${NAME}"
 
 # Uses a "tar" pipe to gather up all the changed files between the "FROM_NOW"
 # marker and "NOW", excluding things like log files, package manager cache &
@@ -49,14 +46,24 @@ FROM_NOW:
 TO_NOW:
   COMMAND
   ARG NAME="default"
-  RUN to-now ${NAME}
-
-# Install the ./hook scripts into the image. All lifecycle hooks
-# apart from "initializeCommand" run inside the container.
-#
-# see: https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_lifecycle-scripts
-INSTALL_HOOKS:
-  COMMAND
-  COPY ./hooks/. /usr/local/bin/.
-  RUN for file in /usr/local/bin/*.bash; do mv "$file" "${file%%.bash}"; done
-  RUN chmod +x /usr/local/bin/*
+  RUN mkdir -p "/tmp/changed-${NAME}" \
+    && tar -c --newer "/tmp/mark-${NAME}" \
+      --exclude /FROM_NOW/script \
+      --exclude /TO_NOW/script \
+      --exclude /boot \
+      --exclude /dev \
+      --exclude /etc/hosts \
+      --exclude /etc/resolv.conf \
+      --exclude /etc/ld.so.cache \
+      --exclude /media \
+      --exclude /mnt \
+      --exclude /proc \
+      --exclude /run \
+      --exclude /srv \
+      --exclude /sys \
+      --exclude /tmp \
+      --exclude /usr/share/man \
+      --exclude /usr/share/doc \
+      --exclude /var \
+      -f - / | tar -xf - -C "/tmp/changed-${NAME}" \
+    && find "/tmp/changed-${NAME}" -type d -empty -delete

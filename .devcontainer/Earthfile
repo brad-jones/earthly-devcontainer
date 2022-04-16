@@ -1,12 +1,13 @@
 VERSION --use-cache-command 0.6
 IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/hooks
 IMPORT github.com/brad-jones/earthly-devcontainer/debian/entrypoint
 IMPORT github.com/brad-jones/earthly-devcontainer/debian/ca-certificates
 
 FROM debian+base
-DO debian+INSTALL_HOOKS
 DO ca-certificates+INSTALL
-DO entrypoint+INSTALL
+DO hooks+INSTALL
+#DO entrypoint+INSTALL
 SAVE IMAGE ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest
 
 # https://github.com/brad-jones/hashdir/blob/master/.devcontainer/Dockerfile
