@@ -8,5 +8,4 @@ VERSION --use-cache-command 0.6
 INSTALL:
   COMMAND
   COPY ./hooks/. /usr/local/bin/.
-  RUN for file in /usr/local/bin/*.bash; do mv "$file" "${file%%.bash}"; done
   RUN chmod +x /usr/local/bin/*
