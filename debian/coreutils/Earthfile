@@ -1,0 +1,28 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/ca-certificates
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/curl
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/envsubst
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/git
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/gpg
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/openssh-client
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/procps
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/socat
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/sudo
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/unzip
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/xz
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/zip
+
+INSTALL:
+  COMMAND
+  DO ca-certificates+INSTALL
+  DO curl+INSTALL
+  DO envsubst+INSTALL
+  DO git+INSTALL
+  DO gpg+INSTALL
+  DO openssh-client+INSTALL
+  DO procps+INSTALL
+  DO socat+INSTALL
+  DO sudo+INSTALL
+  DO unzip+INSTALL
+  DO xz+INSTALL
+  DO zip+INSTALL

@@ -1,15 +1,23 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/hooks
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/envsubst
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/entrypoint
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/ca-certificates
 
-FROM debian+base
-DO ca-certificates+INSTALL
-DO envsubst+INSTALL
-DO hooks+INSTALL
-DO entrypoint+INSTALL
+FROM github.com/brad-jones/earthly-devcontainer/debian+base
+DO github.com/brad-jones/earthly-devcontainer/debian/coreutils+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/commitlint+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/cosign+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/docker-cli+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/docker-compose+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/dprint+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/ghcli+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/go-task+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/go+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/golangci-lint+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/jq+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/lefthook+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/nfpm+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/node+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/oras+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/semantic-release+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/shellcheck+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/shfmt+INSTALL
+DO github.com/brad-jones/earthly-devcontainer/debian/entrypoint+INSTALL
 SAVE IMAGE ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest
-
-# https://github.com/brad-jones/hashdir/blob/master/.devcontainer/Dockerfile

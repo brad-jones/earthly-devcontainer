@@ -2,6 +2,8 @@ VERSION --use-cache-command 0.6
 IMPORT github.com/brad-jones/earthly-devcontainer/debian
 IMPORT github.com/brad-jones/earthly-devcontainer/debian/sudo
 IMPORT github.com/brad-jones/earthly-devcontainer/debian/gosu
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/socat
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/hooks
 IMPORT github.com/brad-jones/earthly-devcontainer/debian/entrypoint
 
 # Create our entrypoint that will execute each time the devcontainer is started.
@@ -26,7 +28,6 @@ ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
 build:
   FROM debian+builder
   DO sudo+INSTALL
-  DO gosu+INSTALL
   COPY ./install-entrypoint.bash /usr/local/bin/install-entrypoint
   RUN chmod +x /usr/local/bin/install-entrypoint
   DO debian+FROM_NOW
@@ -48,6 +49,8 @@ INSTALL:
   COMMAND
   DO sudo+INSTALL
   DO gosu+INSTALL
+  DO socat+INSTALL
+  DO hooks+INSTALL
   IF [ ! -f "/entrypoint.bash" ]
     COPY entrypoint+build/ /
     ENTRYPOINT [ "/entrypoint.bash" ]
