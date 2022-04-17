@@ -58,8 +58,6 @@ TO_NOW:
   ARG NAME="default"
   RUN mkdir -p "/tmp/changed-${NAME}" \
     && tar -c --newer "/tmp/mark-${NAME}" \
-      --exclude /FROM_NOW/script \
-      --exclude /TO_NOW/script \
       --exclude /boot \
       --exclude /dev \
       --exclude /etc/hosts \
