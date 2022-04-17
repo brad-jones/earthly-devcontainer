@@ -1,0 +1,22 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/dprint
+
+ARG DPRINT_VERSION="0.20.0"
+ARG DPRINT_SHA256="5bb80558cba2f2f530e26e3acef2688523ffe826f40794f7bfffd954bd181992"
+
+# see: https://github.com/dprint/dprint
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/dprint/dprint/releases/download/${DPRINT_VERSION}/dprint-x86_64-unknown-linux-gnu.zip" -o /tmp/dprint.zip
+  RUN echo "${DPRINT_SHA256} /tmp/dprint.zip" | sha256sum --check --status
+  RUN unzip /tmp/dprint.zip -d /usr/bin
+  RUN chmod +x /usr/bin/dprint
+  SAVE ARTIFACT /usr/bin/dprint
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/dprint" ]
+    COPY dprint+build/ /
+  END

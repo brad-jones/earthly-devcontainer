@@ -1,0 +1,21 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/cosign
+
+ARG COSIGN_VERSION="1.5.2"
+ARG COSIGN_SHA256="080c0ba10674d2909fb3b4b867b102aefa021959edf2696c8cc1ba08e824bccb"
+
+# see: https://github.com/sigstore/cosign
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64" -o /usr/bin/cosign
+  RUN echo "${COSIGN_SHA256} /usr/bin/cosign" | sha256sum --check --status
+  RUN chmod +x /usr/bin/cosign
+  SAVE ARTIFACT /usr/bin/cosign
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/cosign" ]
+    COPY cosign+build/ /
+  END

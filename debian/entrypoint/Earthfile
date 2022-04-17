@@ -1,5 +1,7 @@
 VERSION --use-cache-command 0.6
 IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/sudo
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/gosu
 IMPORT github.com/brad-jones/earthly-devcontainer/debian/entrypoint
 
 # Create our entrypoint that will execute each time the devcontainer is started.
@@ -14,20 +16,38 @@ IMPORT github.com/brad-jones/earthly-devcontainer/debian/entrypoint
 #
 # see: https://code.visualstudio.com/docs/remote/containers-advanced#_adding-startup-commands-to-the-docker-image-instead
 
+ARG USERNAME="code"
+ARG USER_UID="1000"
+ARG USER_GID="${USER_UID}"
+ARG DOCKER_SOURCE_SOCKET="/var/run/docker-host.sock"
+ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
+ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
+
 build:
   FROM debian+builder
-  ARG USERNAME="code"
-  ARG USER_UID="1000"
-  ARG USER_GID="${USER_UID}"
-  ARG DOCKER_SOURCE_SOCKET="/var/run/docker-host.sock"
-  ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
-  ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
+  DO sudo+INSTALL
+  DO gosu+INSTALL
   COPY ./install-entrypoint.bash /usr/local/bin/install-entrypoint
-  RUN chmod +x /usr/local/bin/install-entrypoint && install-entrypoint
-  SAVE ARTIFACT /entrypoint.bash
+  RUN chmod +x /usr/local/bin/install-entrypoint
+  DO debian+FROM_NOW
+  # see: https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
+  RUN groupadd --gid "$USER_GID" "$USERNAME"
+  RUN useradd --uid "$USER_UID" --gid "$USER_GID" -m "$USERNAME"
+  RUN echo "$USERNAME ALL=(root) NOPASSWD:ALL" >"/etc/sudoers.d/$USERNAME"
+  RUN chmod 0440 "/etc/sudoers.d/$USERNAME"
+  # also: https://code.visualstudio.com/remote/advancedcontainers/persist-bash-history
+  RUN mkdir /bashhistory
+  RUN touch /bashhistory/.bash_history
+  RUN chown -R "$USERNAME" /bashhistory
+  RUN echo "export PROMPT_COMMAND='history -a' && export HISTFILE=/bashhistory/.bash_history" >>"/home/$USERNAME/.bashrc"
+  RUN install-entrypoint
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
 
 INSTALL:
   COMMAND
+  DO sudo+INSTALL
+  DO gosu+INSTALL
   IF [ ! -f "/entrypoint.bash" ]
     COPY entrypoint+build/ /
     ENTRYPOINT [ "/entrypoint.bash" ]

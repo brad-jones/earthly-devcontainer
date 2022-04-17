@@ -1,0 +1,28 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/go
+
+ARG GO_VERSION="1.17.6"
+ARG GO_SHA256="231654bbf2dab3d86c1619ce799e77b03d96f9b50770297c8f4dff8836fc8ca2"
+
+# see: https://golang.org
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -o /tmp/go.tar.gz
+  RUN echo "${GO_SHA256} /tmp/go.tar.gz" | sha256sum --check --status
+  DO debian+FROM_NOW
+  RUN tar -C /usr/local -xzf /tmp/go.tar.gz
+  RUN ln -s /usr/local/go/bin/go /usr/bin/go
+  RUN ln -s /usr/local/go/bin/gofmt /usr/bin/gofmt
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/go" ]
+    COPY go+build/ /
+
+    # Disable CGO so we don't need gcc, etc & further bloat this image.
+    ENV CGO_ENABLED="0"
+  END

@@ -1,15 +1,17 @@
 VERSION --use-cache-command 0.6
 IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/ca-certificates
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/xz
+
+# see: https://packages.debian.org/bullseye/xz-utils
 
 build:
   FROM debian+builder
   # NOTE: The builder already installs this package so we just
   # save the artifact thats already part of the builder image.
-  SAVE ARTIFACT /tmp/changed-ca-certificates/*
+  SAVE ARTIFACT /tmp/changed-xz/*
 
 INSTALL:
   COMMAND
-  IF [ ! -f "/etc/ca-certificates.conf" ]
-    COPY ca-certificates+build/ /
+  IF [ ! -f "/usr/bin/xz" ]
+    COPY xz+build/ /
   END

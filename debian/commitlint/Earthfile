@@ -1,0 +1,36 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/node
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/pnpm
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/commitlint
+
+
+ARG COMMITLINT_VERSION="16.1.0"
+ARG COMMITLINT_CONFIG_VERSION="16.0.0"
+
+# see: https://commitlint.js.org
+
+build:
+  FROM debian+builder
+  DO pnpm+INSTALL
+  CACHE /root/.cache/pnpm
+  CACHE /root/.local/state/pnpm
+  DO debian+FROM_NOW
+  RUN pnpm install --store-dir /.pnpm-store -g \
+    "@commitlint/cli@${COMMITLINT_VERSION}" \
+    "@commitlint/config-conventional@${COMMITLINT_CONFIG_VERSION}"
+  COPY ./commitlint /usr/bin/commitlint
+  RUN chmod +x /usr/bin/commitlint
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  DO node+INSTALL
+  IF [ ! -f "/usr/bin/commitlint" ]
+    COPY commitlint+build/ /
+
+    # Commitlint needs to know where to find the globally installed modules
+    # see: https://github.com/conventional-changelog/commitlint/issues/613
+    ENV NODE_PATH="/usr/pnpm-global/5/node_modules"
+  END

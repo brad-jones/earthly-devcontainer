@@ -1,0 +1,23 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/oras
+
+ARG ORAS_VERSION="0.12.0"
+ARG ORAS_SHA256="660a4ecd87414d1f29610b2ed4630482f1f0d104431576d37e59752c27de37ed"
+
+# see:https://oras.land
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_amd64.tar.gz" -o /tmp/oras.tar.gz
+  RUN echo "${ORAS_SHA256} /tmp/oras.tar.gz" | sha256sum --check --status
+  RUN tar -C /tmp -xf /tmp/oras.tar.gz
+  RUN mv "/tmp/oras" /usr/bin/oras
+  RUN chmod +x /usr/bin/oras
+  SAVE ARTIFACT /usr/bin/oras
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/oras" ]
+    COPY oras+build/ /
+  END

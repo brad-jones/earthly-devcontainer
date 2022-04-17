@@ -1,0 +1,23 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/golangci-lint
+
+ARG GOCI_LINT_VERSION="1.43.0"
+ARG GOCI_SHA256="f3515cebec926257da703ba0a2b169e4a322c11dc31a8b4656b50a43e48877f4"
+
+# see: https://golangci-lint.run
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/golangci/golangci-lint/releases/download/v${GOCI_LINT_VERSION}/golangci-lint-${GOCI_LINT_VERSION}-linux-amd64.tar.gz" -o /tmp/golangci-lint.tar.gz
+  RUN echo "${GOCI_SHA256} /tmp/golangci-lint.tar.gz" | sha256sum --check --status
+  RUN tar -C /tmp -xzf /tmp/golangci-lint.tar.gz
+  RUN mv "/tmp/golangci-lint-${GOCI_LINT_VERSION}-linux-amd64/golangci-lint" "/usr/bin/golangci-lint"
+  RUN chmod +x /usr/bin/golangci-lint
+  SAVE ARTIFACT /usr/bin/golangci-lint
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/golangci-lint" ]
+    COPY golangci-lint+build/ /
+  END

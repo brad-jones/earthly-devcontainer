@@ -1,0 +1,23 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/go-task
+
+ARG TASK_VERSION="3.10.0"
+ARG TASK_SHA256="f78c861e6c772a3263e478da7ae3223e10c2bc6b7b0728717d30db35d463f4b9"
+
+# see: https://taskfile.dev
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/go-task/task/releases/download/v${TASK_VERSION}/task_linux_amd64.tar.gz" -o /tmp/task.tar.gz
+  RUN echo "${TASK_SHA256} /tmp/task.tar.gz" | sha256sum --check --status
+  RUN tar -C /tmp -xzf /tmp/task.tar.gz
+  RUN mv /tmp/task /usr/bin/task
+  RUN chmod +x /usr/bin/task
+  SAVE ARTIFACT /usr/bin/task
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/task" ]
+    COPY go-task+build/ /
+  END

@@ -9,7 +9,7 @@ FROM debian+base
 DO ca-certificates+INSTALL
 DO envsubst+INSTALL
 DO hooks+INSTALL
-#DO entrypoint+INSTALL
+DO entrypoint+INSTALL
 SAVE IMAGE ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest
 
 # https://github.com/brad-jones/hashdir/blob/master/.devcontainer/Dockerfile

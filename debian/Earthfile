@@ -9,11 +9,20 @@ ENV SHELL="/bin/bash"
 
 builder:
   ENV DEBIAN_FRONTEND="noninteractive"
-  RUN apt-get -y update
   DO +FROM_NOW --NAME="ca-certificates"
   RUN apt-get -y install --no-install-recommends ca-certificates
   RUN sed -i 's/http:\/\//https:\/\//g' /etc/apt/sources.list
   DO +TO_NOW --NAME="ca-certificates"
+  RUN apt-get -y update
+  DO +FROM_NOW --NAME="curl"
+  RUN apt-get -y install --no-install-recommends curl
+  DO +TO_NOW --NAME="curl"
+  DO +FROM_NOW "unzip"
+  RUN apt-get -y install --no-install-recommends unzip
+  DO +TO_NOW "unzip"
+  DO +FROM_NOW "xz"
+  RUN apt-get -y install --no-install-recommends xz-utils
+  DO +TO_NOW "xz"
 
 # Simply touches a new marker file so we can refer
 # to it's timestamp in the "TO_NOW" script.

@@ -1,0 +1,18 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/sudo
+
+# see: https://www.sudo.ws
+
+build:
+  FROM debian+builder
+  DO debian+FROM_NOW
+  RUN apt-get -y install --no-install-recommends sudo
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/sudo" ]
+    COPY sudo+build/ /
+  END

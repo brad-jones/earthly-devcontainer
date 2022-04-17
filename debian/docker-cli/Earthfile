@@ -1,0 +1,23 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/docker-cli
+
+# see: https://docs.docker.com/engine/install/debian
+
+build:
+  FROM debian+builder
+  RUN . /etc/os-release && \
+    curl -fsSL "https://download.docker.com/linux/${ID}/gpg" | \
+    gpg --dearmor -o "/usr/share/keyrings/docker-archive-keyring.gpg" && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable" >/etc/apt/sources.list.d/docker.list
+  RUN apt-get -y update
+  DO debian+FROM_NOW
+  RUN apt-get -y install --no-install-recommends docker-ce-cli
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/docker" ]
+    COPY docker-cli+build/ /
+  END

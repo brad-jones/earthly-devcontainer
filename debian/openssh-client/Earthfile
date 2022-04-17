@@ -1,0 +1,18 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/openssh-client
+
+# see: https://www.openssh.com
+
+build:
+  FROM debian+builder
+  DO debian+FROM_NOW
+  RUN apt-get -y install --no-install-recommends openssh-client
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/ssh" ]
+    COPY openssh-client+build/ /
+  END

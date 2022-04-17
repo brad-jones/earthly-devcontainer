@@ -1,0 +1,42 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/node
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/pnpm
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/semantic-release
+
+
+ARG SEMANTIC_RELEASE_VERSION="19.0.2"
+ARG SEMANTIC_RELEASE_CHANGELOG_VERSION="6.0.1"
+ARG SEMANTIC_RELEASE_COMMIT_ANALYZER_VERSION="9.0.2"
+ARG SEMANTIC_RELEASE_EXEC_VERSION="6.0.3"
+ARG SEMANTIC_RELEASE_GIT_VERSION="10.0.1"
+ARG SEMANTIC_RELEASE_RELEASE_NOTES_GENERATOR_VERSION="10.0.3"
+ARG CONVENTIONAL_COMMITS_CHANGELOG_VERSION="4.6.3"
+
+# see: https://semantic-release.gitbook.io
+
+build:
+  FROM debian+builder
+  DO pnpm+INSTALL
+  CACHE /root/.cache/pnpm
+  CACHE /root/.local/state/pnpm
+  DO debian+FROM_NOW
+  RUN pnpm install --store-dir /.pnpm-store -g \
+    "semantic-release@${SEMANTIC_RELEASE_VERSION}" \
+    "@semantic-release/changelog@${SEMANTIC_RELEASE_CHANGELOG_VERSION}" \
+    "@semantic-release/commit-analyzer@${SEMANTIC_RELEASE_COMMIT_ANALYZER_VERSION}" \
+    "@semantic-release/exec@${SEMANTIC_RELEASE_EXEC_VERSION}" \
+    "@semantic-release/git@${SEMANTIC_RELEASE_GIT_VERSION}" \
+    "@semantic-release/release-notes-generator@${SEMANTIC_RELEASE_RELEASE_NOTES_GENERATOR_VERSION}" \
+    "conventional-changelog-conventionalcommits@${CONVENTIONAL_COMMITS_CHANGELOG_VERSION}"
+  COPY ./semantic-release /usr/bin/semantic-release
+  RUN chmod +x /usr/bin/semantic-release
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  DO node+INSTALL
+  IF [ ! -f "/usr/bin/semantic-release" ]
+    COPY semantic-release+build/ /
+  END

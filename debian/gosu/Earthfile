@@ -1,0 +1,21 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/gosu
+
+ARG GOSU_VERSION="1.14"
+ARG GOSU_SHA256="bd8be776e97ec2b911190a82d9ab3fa6c013ae6d3121eea3d0bfd5c82a0eaf8c"
+
+# see: https://github.com/tianon/gosu
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" -o /usr/bin/gosu
+  RUN echo "${GOSU_SHA256} /usr/bin/gosu" | sha256sum --check --status
+  RUN chmod +x /usr/bin/gosu
+  SAVE ARTIFACT /usr/bin/gosu
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/gosu" ]
+    COPY gosu+build/ /
+  END

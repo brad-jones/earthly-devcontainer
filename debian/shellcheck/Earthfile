@@ -1,0 +1,23 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/shellcheck
+
+ARG SHELLCHECK_VERSION="0.8.0"
+ARG SHELLCHECK_SHA256="ab6ee1b178f014d1b86d1e24da20d1139656c8b0ed34d2867fbb834dad02bf0a"
+
+# see: https://github.com/koalaman/shellcheck
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" -o /tmp/shellcheck.tar.xz
+  RUN echo "${SHELLCHECK_SHA256} /tmp/shellcheck.tar.xz" | sha256sum --check --status
+  RUN tar -C /tmp -xf /tmp/shellcheck.tar.xz
+  RUN mv "/tmp/shellcheck-v${SHELLCHECK_VERSION}/shellcheck" "/usr/bin/shellcheck"
+  RUN chmod +x /usr/bin/shellcheck
+  SAVE ARTIFACT /usr/bin/shellcheck
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/shellcheck" ]
+    COPY shellcheck+build/ /
+  END

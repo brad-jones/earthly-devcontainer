@@ -1,0 +1,21 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/pnpm
+
+ARG PNPM_VERSION="6.28.0"
+ARG PNPM_SHA256="796b7ffb78f55d65d139e7b08b38d3732d85da951b6a2218db7a81212325d7ac"
+
+# see: https://pnpm.io
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/pnpm/pnpm/releases/download/v${PNPM_VERSION}/pnpm-linuxstatic-x64" -o /usr/bin/pnpm
+  RUN echo "${PNPM_SHA256} /usr/bin/pnpm" | sha256sum --check --status
+  RUN chmod +x /usr/bin/pnpm
+  SAVE ARTIFACT /usr/bin/pnpm
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/pnpm" ]
+    COPY pnpm+build/ /
+  END

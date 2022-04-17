@@ -1,0 +1,18 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/gpg
+
+# see: https://gnupg.org
+
+build:
+  FROM debian+builder
+  DO debian+FROM_NOW
+  RUN apt-get -y install --no-install-recommends gnupg2
+  DO debian+TO_NOW
+  SAVE ARTIFACT /tmp/changed-default/*
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/gpg" ]
+    COPY gpg+build/ /
+  END

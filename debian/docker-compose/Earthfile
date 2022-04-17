@@ -1,0 +1,21 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/docker-compose
+
+ARG DOCKER_COMPOSE_VERSION="2.2.3"
+ARG DOCKER_COMPOSE_SHA256="f15a7cd54a85f760a8ece92da63fb85b93036c72ead8056391b8a3fe9dc73134"
+
+# see: https://docs.docker.com/engine/install/debian
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/docker/compose/releases/download/v$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+  RUN echo "${DOCKER_COMPOSE_SHA256} /usr/bin/docker-compose" | sha256sum --check --status
+  RUN chmod +x /usr/bin/docker-compose
+  SAVE ARTIFACT /usr/bin/docker-compose
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/docker-compose" ]
+    COPY docker-compose+build/ /
+  END

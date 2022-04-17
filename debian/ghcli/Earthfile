@@ -1,0 +1,23 @@
+VERSION --use-cache-command 0.6
+IMPORT github.com/brad-jones/earthly-devcontainer/debian
+IMPORT github.com/brad-jones/earthly-devcontainer/debian/ghcli
+
+ARG GHCLI_VERSION="2.4.0"
+ARG GHCLI_SHA256="e3fc4ec95c95ec5e97e90c0128b9be60e8095aaaf01e1def4f0cfabc5efcecc0"
+
+# see: https://github.com/cli/cli
+
+build:
+  FROM debian+builder
+  RUN curl -L "https://github.com/cli/cli/releases/download/v${GHCLI_VERSION}/gh_${GHCLI_VERSION}_linux_amd64.tar.gz" -o /tmp/gh.tar.gz
+  RUN echo "${GHCLI_SHA256} /tmp/gh.tar.gz" | sha256sum --check --status
+  RUN tar -C /tmp -xf /tmp/gh.tar.gz
+  RUN mv "/tmp/gh_${GHCLI_VERSION}_linux_amd64/bin/gh" /usr/bin/gh
+  RUN chmod +x /usr/bin/gh
+  SAVE ARTIFACT /usr/bin/gh
+
+INSTALL:
+  COMMAND
+  IF [ ! -f "/usr/bin/gh" ]
+    COPY ghcli+build/ /
+  END
