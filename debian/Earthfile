@@ -24,6 +24,7 @@ builder:
   DO +FROM_NOW --NAME="xz"
   RUN apt-get -y install --no-install-recommends xz-utils
   DO +TO_NOW --NAME="xz"
+  RUN apt-get -y install --no-install-recommends tree
 
 # Simply touches a new marker file so we can refer
 # to it's timestamp in the "TO_NOW" script.

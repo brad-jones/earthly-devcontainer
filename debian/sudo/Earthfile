@@ -10,6 +10,7 @@ build:
   RUN apt-get -y install --no-install-recommends sudo
   DO debian+TO_NOW
   RUN ls -hal /tmp/changed-default
+  RUN tree /tmp/changed-default
   SAVE ARTIFACT /tmp/changed-default/*
 
 INSTALL:
