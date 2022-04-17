@@ -17,12 +17,12 @@ builder:
   DO +FROM_NOW --NAME="curl"
   RUN apt-get -y install --no-install-recommends curl
   DO +TO_NOW --NAME="curl"
-  DO +FROM_NOW "unzip"
+  DO +FROM_NOW --NAME="unzip"
   RUN apt-get -y install --no-install-recommends unzip
-  DO +TO_NOW "unzip"
-  DO +FROM_NOW "xz"
+  DO +TO_NOW --NAME="unzip"
+  DO +FROM_NOW --NAME="xz"
   RUN apt-get -y install --no-install-recommends xz-utils
-  DO +TO_NOW "xz"
+  DO +TO_NOW --NAME="xz"
 
 # Simply touches a new marker file so we can refer
 # to it's timestamp in the "TO_NOW" script.
@@ -39,9 +39,9 @@ FROM_NOW:
 #
 #   foo-provider:
 #     FROM big-builder-image
-#     DO +FROM_NOW "foo-install"
+#     DO +FROM_NOW --NAME="foo-install"
 #     RUN install foo commands
-#     DO +TO_NOW "foo-install"
+#     DO +TO_NOW --NAME="foo-install"
 #     SAVE ARTIFACT /tmp/changed-foo-install/*
 #
 #   foo-consumer:
