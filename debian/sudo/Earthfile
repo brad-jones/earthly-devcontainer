@@ -1,19 +1,18 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/sudo
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
 # see: https://www.sudo.ws
 
 build:
-  FROM debian+builder
-  DO debian+FROM_NOW
+  FROM $UDCBASE+builder
+  DO $UDCBASE+FROM_NOW
   RUN apt-get -y install --no-install-recommends sudo
-  DO debian+TO_NOW
+  DO $UDCBASE+TO_NOW
   RUN rm -rf /tmp/changed-default/lib
   SAVE ARTIFACT /tmp/changed-default/*
 
 INSTALL:
   COMMAND
   IF [ ! -f "/usr/bin/sudo" ]
-    COPY sudo+build/ /
+    COPY $UDCBASE/sudo+build/ /
   END

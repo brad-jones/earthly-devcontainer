@@ -1,18 +1,17 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/envsubst
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
 # see: https://linux.die.net/man/1/envsubst
 
 build:
-  FROM debian+builder
-  DO debian+FROM_NOW
+  FROM $UDCBASE+builder
+  DO $UDCBASE+FROM_NOW
   RUN apt-get -y install --no-install-recommends gettext-base
-  DO debian+TO_NOW
+  DO $UDCBASE+TO_NOW
   SAVE ARTIFACT /tmp/changed-default/*
 
 INSTALL:
   COMMAND
   IF [ ! -f "/usr/bin/envsubst" ]
-    COPY envsubst+build/ /
+    COPY $UDCBASE/envsubst+build/ /
   END

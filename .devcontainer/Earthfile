@@ -1,23 +1,24 @@
 VERSION --use-cache-command 0.6
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
-FROM github.com/brad-jones/earthly-devcontainer/debian+base
-DO github.com/brad-jones/earthly-devcontainer/debian/coreutils+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/commitlint+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/cosign+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/docker-cli+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/docker-compose+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/dprint+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/ghcli+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/go-task+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/go+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/golangci-lint+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/jq+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/lefthook+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/nfpm+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/node+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/oras+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/semantic-release+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/shellcheck+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/shfmt+INSTALL
-DO github.com/brad-jones/earthly-devcontainer/debian/entrypoint+INSTALL
+FROM $UDCBASE+base
+DO $UDCBASE/coreutils+INSTALL
+DO $UDCBASE/commitlint+INSTALL
+DO $UDCBASE/cosign+INSTALL
+DO $UDCBASE/docker-cli+INSTALL
+DO $UDCBASE/docker-compose+INSTALL
+DO $UDCBASE/dprint+INSTALL
+DO $UDCBASE/ghcli+INSTALL
+DO $UDCBASE/go-task+INSTALL
+DO $UDCBASE/go+INSTALL
+DO $UDCBASE/golangci-lint+INSTALL
+DO $UDCBASE/jq+INSTALL
+DO $UDCBASE/lefthook+INSTALL
+DO $UDCBASE/nfpm+INSTALL
+DO $UDCBASE/node+INSTALL
+DO $UDCBASE/oras+INSTALL
+DO $UDCBASE/semantic-release+INSTALL
+DO $UDCBASE/shellcheck+INSTALL
+DO $UDCBASE/shfmt+INSTALL
+DO $UDCBASE/entrypoint+INSTALL
 SAVE IMAGE ghcr.io/brad-jones/earthly-devcontainer/devcontainer:latest

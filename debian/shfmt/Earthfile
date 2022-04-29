@@ -1,6 +1,5 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/shfmt
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
 ARG SHFMT_VERSION="3.4.2"
 ARG SHFMT_SHA256="9cc743f058ab8896ca6fa94a7f2e570b95294e8a142600f09fe832e406a88f18"
@@ -8,7 +7,7 @@ ARG SHFMT_SHA256="9cc743f058ab8896ca6fa94a7f2e570b95294e8a142600f09fe832e406a88f
 # see: https://github.com/mvdan/sh
 
 build:
-  FROM debian+builder
+  FROM $UDCBASE+builder
   RUN curl -L "https://github.com/mvdan/sh/releases/download/v${SHFMT_VERSION}/shfmt_v${SHFMT_VERSION}_linux_amd64" -o /usr/bin/shfmt
   RUN echo "${SHFMT_SHA256} /usr/bin/shfmt" | sha256sum --check --status
   RUN chmod +x /usr/bin/shfmt
@@ -17,5 +16,5 @@ build:
 INSTALL:
   COMMAND
   IF [ ! -f "/usr/bin/shfmt" ]
-    COPY shfmt+build/ /
+    COPY $UDCBASE/shfmt+build/ /
   END

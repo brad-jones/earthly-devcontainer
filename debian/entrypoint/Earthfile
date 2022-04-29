@@ -1,10 +1,5 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/sudo
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/gosu
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/socat
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/hooks
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/entrypoint
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
 # Create our entrypoint that will execute each time the devcontainer is started.
 #
@@ -26,11 +21,11 @@ ARG DOCKER_TARGET_SOCKET="/var/run/docker.sock"
 ARG ENTRYPOINT_LOGS="/tmp/entrypoint-logs"
 
 build:
-  FROM debian+builder
-  DO sudo+INSTALL
+  FROM $UDCBASE+builder
+  DO $UDCBASE/sudo+INSTALL
   COPY ./install-entrypoint.bash /usr/local/bin/install-entrypoint
   RUN chmod +x /usr/local/bin/install-entrypoint
-  DO debian+FROM_NOW
+  DO $UDCBASE+FROM_NOW
   # see: https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
   RUN groupadd --gid "$USER_GID" "$USERNAME"
   RUN useradd --uid "$USER_UID" --gid "$USER_GID" -m "$USERNAME"
@@ -42,17 +37,17 @@ build:
   RUN chown -R "$USERNAME" /bashhistory
   RUN echo "export PROMPT_COMMAND='history -a' && export HISTFILE=/bashhistory/.bash_history" >>"/home/$USERNAME/.bashrc"
   RUN install-entrypoint
-  DO debian+TO_NOW
+  DO $UDCBASE+TO_NOW
   SAVE ARTIFACT /tmp/changed-default/*
 
 INSTALL:
   COMMAND
-  DO sudo+INSTALL
-  DO gosu+INSTALL
-  DO socat+INSTALL
-  DO hooks+INSTALL
+  DO $UDCBASE/sudo+INSTALL
+  DO $UDCBASE/gosu+INSTALL
+  DO $UDCBASE/socat+INSTALL
+  DO $UDCBASE/hooks+INSTALL
   IF [ ! -f "/entrypoint.bash" ]
-    COPY entrypoint+build/ /
+    COPY $UDCBASE/entrypoint+build/ /
     ENTRYPOINT [ "/entrypoint.bash" ]
     CMD [ "sleep", "infinity" ]
   END

@@ -1,6 +1,5 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/lefthook
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
 ARG LEFTHOOK_VERSION="0.7.7"
 ARG LEFTHOOK_SHA256="fd2aae8e8d0ab4910ff6acbbe9f73e3137768c3c279ee93f7f3f23438fe71df2"
@@ -8,13 +7,14 @@ ARG LEFTHOOK_SHA256="fd2aae8e8d0ab4910ff6acbbe9f73e3137768c3c279ee93f7f3f23438fe
 # see: https://github.com/evilmartians/lefthook
 
 build:
-  FROM debian+builder
+  FROM $UDCBASE+builder
   RUN curl -L "https://github.com/evilmartians/lefthook/releases/download/v${LEFTHOOK_VERSION}/lefthook_${LEFTHOOK_VERSION}_Linux_x86_64" -o /usr/bin/lefthook
   RUN echo "${LEFTHOOK_SHA256} /usr/bin/lefthook" | sha256sum --check --status
   RUN chmod +x /usr/bin/lefthook
   SAVE ARTIFACT /usr/bin/lefthook
+
 INSTALL:
   COMMAND
   IF [ ! -f "/usr/bin/lefthook" ]
-    COPY lefthook+build/ /
+    COPY $UDCBASE/lefthook+build/ /
   END

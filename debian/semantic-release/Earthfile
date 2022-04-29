@@ -1,9 +1,5 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/node
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/pnpm
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/semantic-release
-
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
 ARG SEMANTIC_RELEASE_VERSION="19.0.2"
 ARG SEMANTIC_RELEASE_CHANGELOG_VERSION="6.0.1"
@@ -16,11 +12,11 @@ ARG CONVENTIONAL_COMMITS_CHANGELOG_VERSION="4.6.3"
 # see: https://semantic-release.gitbook.io
 
 build:
-  FROM debian+builder
-  DO pnpm+INSTALL
+  FROM $UDCBASE+builder
+  DO $UDCBASE/pnpm+INSTALL
   CACHE /root/.cache/pnpm
   CACHE /root/.local/state/pnpm
-  DO debian+FROM_NOW
+  DO $UDCBASE+FROM_NOW
   RUN pnpm install --store-dir /.pnpm-store -g \
     "semantic-release@${SEMANTIC_RELEASE_VERSION}" \
     "@semantic-release/changelog@${SEMANTIC_RELEASE_CHANGELOG_VERSION}" \
@@ -31,12 +27,12 @@ build:
     "conventional-changelog-conventionalcommits@${CONVENTIONAL_COMMITS_CHANGELOG_VERSION}"
   COPY ./semantic-release /usr/bin/semantic-release
   RUN chmod +x /usr/bin/semantic-release
-  DO debian+TO_NOW
+  DO $UDCBASE+TO_NOW
   SAVE ARTIFACT /tmp/changed-default/*
 
 INSTALL:
   COMMAND
-  DO node+INSTALL
+  DO $UDCBASE/node+INSTALL
   IF [ ! -f "/usr/bin/semantic-release" ]
-    COPY semantic-release+build/ /
+    COPY $UDCBASE/semantic-release+build/ /
   END

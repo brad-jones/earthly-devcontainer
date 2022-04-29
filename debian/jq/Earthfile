@@ -1,6 +1,5 @@
 VERSION --use-cache-command 0.6
-IMPORT github.com/brad-jones/earthly-devcontainer/debian
-IMPORT github.com/brad-jones/earthly-devcontainer/debian/jq
+ARG UDCBASE=github.com/brad-jones/earthly-devcontainer/debian
 
 ARG JQ_VERSION="1.6"
 ARG JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44"
@@ -8,7 +7,7 @@ ARG JQ_SHA256="af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44"
 # see: https://github.com/stedolan/jq
 
 build:
-  FROM debian+builder
+  FROM $UDCBASE+builder
   RUN curl -L "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64" -o /usr/bin/jq
   RUN echo "${JQ_SHA256} /usr/bin/jq" | sha256sum --check --status
   RUN chmod +x /usr/bin/jq
@@ -17,5 +16,5 @@ build:
 INSTALL:
   COMMAND
   IF [ ! -f "/usr/bin/jq" ]
-    COPY jq+build/ /
+    COPY $UDCBASE/jq+build/ /
   END
